@@ -42,7 +42,7 @@
 		</section>
 		<section class="graphics-wrapper">
 			<p class="opening-text">
-				Click on a continent to see its statistics and to choose a specific country
+				Click on a button to see its statistics and to choose a specific country
 			</p>
 			<div class="select-data-wrapper">
 				<button>
@@ -61,12 +61,47 @@
 			<div>
 				<canvas id="dynamic-chart"></canvas>
 			</div>
-			<div class="loader">
-
+			<div class="la-ball-pulse-sync">
+				<div></div>
+				<div></div>
+				<div></div>
 			</div>
 		</section>
 		<section class="countries-wrapper">
-
+			<table>
+				<tr>
+					<th>
+						Total Cases
+					</th>
+					<th>
+						Total Deaths
+					</th>
+					<th>
+						Total Recovered
+					</th>
+				</tr>
+				<tr>
+					<td class="country-total-cases"></td>
+					<td class="country-total-deaths"></td>
+					<td class="country-total-recovered"></td>
+				</tr>
+				<tr>
+					<th>
+						New Cases
+					</th>
+					<th>
+						New Deaths
+					</th>
+					<th>
+						In Critical Condition
+					</th>
+				</tr>
+				<tr>
+					<td class="country-new-cases"></td>
+					<td class="country-new-deaths"></td>
+					<td class="country-critical"></td>
+				</tr>
+			</table>
 		</section>
 	</div>
 </body>

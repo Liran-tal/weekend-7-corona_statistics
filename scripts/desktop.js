@@ -5,43 +5,49 @@ const core_elements = {
 	graphics_wrapper: document.querySelector('.graphics-wrapper'),
 	opening_text: document.querySelector('.opening-text'),
 	loader: document.querySelector('.loader'),
-	data_selector: document.querySelector('.select-data-wrapper'),
-	data_category: "confirmed cases",
+	data_selectors: document.querySelector('.select-data-wrapper'),
+	chart_area: document.getElementById('dynamic-chart'),
 	countries_wrapper: document.querySelector('.countries-wrapper'),
+	current_region: 'global',
+	chart_var: undefined
 }
 
-const global_data = {
-	// africa: ,
-	// americas,
-	// asia,
-	// europe,
-	// oceania
-}
+const global_data = {};
 	
 // TODO: refactor the whole thing: 
-core_elements.continent_buttons.addEventListener('click', main);
+core_elements.continent_buttons.addEventListener('click', regionHandler);
 
 
-// Main function to manage the app different tasks
-async function main({target}) {
+// regionHandler function to manage the app different tasks
+async function regionHandler({target}) {
 	const region = target.innerText.toLowerCase();
 	
 	if (this === target) {
-		console.log("Wrapper clicked");
 		return;
 	}
+
+	core_elements.current_region = region;
+
 	// If button not clicked before by user, set list of that continent countries cca2 to local storage. Than, get that data and store it in an obj.
 	if (!global_data[region]) {
 		await setCca2ToLocalStorage(region);
 		const countries_cca2 = await JSON.parse(localStorage.getItem(region));
 		// console.log("region goten from local storage: ", countries_cca2);
 		global_data[region] = await getCoronaData(countries_cca2)
-		.then((covid_full_data) => {
-			destructureCovidData(countries_cca2, covid_full_data)
-		});
 	}
+	displayData(global_data[region], 'confirmed');
+}
 
-	displayData(global_data[region], core_elements.data_category);
+
+core_elements.data_selectors.addEventListener('click', dataCategoryHandler);
+
+function dataCategoryHandler({target}) {
+	const data_category = target.innerText.toLowerCase();
+	if (this === target) {
+		return;
+	}
+	
+	displayChart(global_data[core_elements.current_region], data_category);
 }
 
 
@@ -82,7 +88,7 @@ async function getCoronaData(countries) {
 
 	const covid_full_data = await Promise.allSettled(promises);
 
-	return covid_full_data;
+	return destructureCovidData(countries, covid_full_data);
 }
 
 
@@ -90,9 +96,14 @@ async function getCoronaData(countries) {
 function destructureCovidData(region, covid_full_data) {
 	let index = 0;
 	for (const country in region) {
-		region[country].data = covid_full_data[index].data.data.latest_data;
-		region[country].today = covid_full_data[index].data.data.today;
-		region[country].updated_at = covid_full_data[index].data.data.updated_at;
+		if (covid_full_data[index].value){
+			region[country].data = covid_full_data[index].value.data.data.latest_data;
+			region[country].today = covid_full_data[index].value.data.data.today;
+			region[country].updated_at = covid_full_data[index].value.data.data.updated_at;
+		}
+		else {
+			delete region[country];
+		}
 		++ index;
 	}
 
@@ -102,44 +113,70 @@ function destructureCovidData(region, covid_full_data) {
 
 
 // Chart functions
-// TODO: graph destroy, videos on charts (traversy, minecraft), https://www.youtube.com/watch?v=fqARSwfsV9w
 
 
 function displayData(region, data_category) {
+	displayChart(region, data_category);
+	displayCountries(region);
+}
+
+
+function displayChart(region, data_category) {
 	const labels = Object.keys(region);
 	const category_data = getDataByCategory(region, data_category);
 	const data = {
 		labels: labels,
 		datasets: [{
 			label: `Number of ${data_category} per country`,
-			backgroundColor: 'rgb(255, 99, 132)',
-			borderColor: 'rgb(255, 99, 132)',
+			backgroundColor: 'rgb(19, 19, 19)',
+			borderColor: 'rgb(19, 19, 19)',
 			data: category_data,
 		}]
 	};
 	const config = {
-		type: 'line',
+		type: 'bar',
 		data: data,
-		options: {}
+		options: {
+			scales: {
+				y: {
+					beginAtZero: true
+				}
+			}
+		}
 	};
 
-	const chart = new Chart(
-		document.getElementById('dynamic-chart'),
+	if (core_elements.chart_var) {
+		core_elements.chart_var.destroy();		
+	}
+	
+	core_elements.chart_var = new Chart(
+		core_elements.chart_area,
 		config
-	);
+		);
 }
 
 
 function getDataByCategory(region, data_category) {
 	const data = [];
 	console.log('region: ', region);
-	console.log('data_category: ', data_category);
-
+	// console.log('data_category: ', data_category);
+	
 	for (const country in region) {
-		console.log("country: ", country);
-		console.log("country.data: ", country.data);
-		console.log("country.data.latest_data: ", country.data);
-		data.push(country.data[data_category])
+		data.push(region[country].data[data_category])
 	}
+	// console.log(data);
 	return data;
 }
+
+
+function displayCountries(region) {
+	countries_wrapper.innerHTML = "";
+}
+
+function countriesNameButtons(region) {
+	Object.keys(region).forEach((country) => {
+		const button = document.createElement('button');
+	
+	});
+}
+

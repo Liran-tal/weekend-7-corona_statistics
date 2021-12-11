@@ -1,0 +1,86 @@
+Licensed under MIT
+*/
+
+.la-ball-pulse-sync,
+.la-ball-pulse-sync > div {
+	 position: relative;
+	 -webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+					 box-sizing: border-box;
+}
+
+.la-ball-pulse-sync {
+	display: block;
+	font-size: 0;
+	color: #fff;
+	width: 54px;
+	height: 18px;
+}
+
+.la-ball-pulse-sync > div {
+	 display: inline-block;
+	 float: none;
+	 background-image: url(../assets/images/loader\ coronavirus-5107804_1280.png);
+	 background-size: contain;
+	 background-color: currentColor;
+	 border: 0 solid currentColor;
+	 width: 10px;
+	 height: 10px;
+	 margin: 4px;
+	 border-radius: 100%;
+	 -webkit-animation: ball-pulse-sync .6s infinite ease-in-out;
+			-moz-animation: ball-pulse-sync .6s infinite ease-in-out;
+				-o-animation: ball-pulse-sync .6s infinite ease-in-out;
+					 animation: ball-pulse-sync .6s infinite ease-in-out;
+}
+
+.la-ball-pulse-sync > div:nth-child(1) {
+	 -webkit-animation-delay: -.14s;
+			-moz-animation-delay: -.14s;
+				-o-animation-delay: -.14s;
+					 animation-delay: -.14s;
+}
+.la-ball-pulse-sync > div:nth-child(2) {
+	 -webkit-animation-delay: -.07s;
+			-moz-animation-delay: -.07s;
+				-o-animation-delay: -.07s;
+					 animation-delay: -.07s;
+}
+.la-ball-pulse-sync > div:nth-child(3) {
+	 -webkit-animation-delay: 0s;
+			-moz-animation-delay: 0s;
+				-o-animation-delay: 0s;
+					 animation-delay: 0s;
+}
+
+.la-ball-pulse-sync.la-3x {
+	width: 162px;
+	height: 54px;
+}
+
+.la-ball-pulse-sync.la-3x > div {
+	width: 30px;
+	height: 30px;
+	margin: 12px;
+}
+
+@keyframes ball-pulse-sync {
+	33% {
+			-webkit-transform: translateY(100%);
+				 -moz-transform: translateY(100%);
+					 -o-transform: translateY(100%);
+							transform: translateY(100%);
+	}
+	66% {
+			-webkit-transform: translateY(-100%);
+				 -moz-transform: translateY(-100%);
+					 -o-transform: translateY(-100%);
+							transform: translateY(-100%);
+	}
+	100% {
+			-webkit-transform: translateY(0);
+				 -moz-transform: translateY(0);
+					 -o-transform: translateY(0);
+							transform: translateY(0);
+	}
+}

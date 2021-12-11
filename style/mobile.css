@@ -1,0 +1,9 @@
+.la-ball-pulse-sync.la-sm {
+	width: 26px;
+	height: 8px;
+}
+.la-ball-pulse-sync.la-sm > div {
+	width: 4px;
+	height: 4px;
+	margin: 2px;
+}
