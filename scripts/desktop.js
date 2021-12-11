@@ -5,7 +5,17 @@ const core_elements = {
 	graphics_wrapper: document.querySelector('.graphics-wrapper'),
 	opening_text: document.querySelector('.opening-text'),
 	loader: document.querySelector('.loader'),
+	data_selector: document.querySelector('.select-data-wrapper'),
+	data_category: "confirmed cases",
 	countries_wrapper: document.querySelector('.countries-wrapper'),
+}
+
+const global_data = {
+	// africa: ,
+	// americas,
+	// asia,
+	// europe,
+	// oceania
 }
 	
 // TODO: refactor the whole thing: 
@@ -21,13 +31,21 @@ async function main({target}) {
 		return;
 	}
 	// If button not clicked before by user, set list of that continent countries cca2 to local storage. Than, get that data and store it in an obj.
-	await setCca2ToLocalStorage(region);
-	const countries_cca2 = await JSON.parse(localStorage.getItem(region));
-	// console.log("region goten from local storage: ", countries_cca2);
+	if (!global_data[region]) {
+		await setCca2ToLocalStorage(region);
+		const countries_cca2 = await JSON.parse(localStorage.getItem(region));
+		// console.log("region goten from local storage: ", countries_cca2);
+		global_data[region] = await getCoronaData(countries_cca2)
+		.then((covid_full_data) => {
+			destructureCovidData(countries_cca2, covid_full_data)
+		});
+	}
 
-	const continent_data = getCoronaData(countries_cca2);
-	
+	displayData(global_data[region], core_elements.data_category);
 }
+
+
+// API functions
 
 
 // Fetch data from Restcountries API, create an object of relevant region with countries: cca2 pairs and set it to local storage.
@@ -62,26 +80,66 @@ async function getCoronaData(countries) {
 		promises.push(axios.get(`https://intense-mesa-62220.herokuapp.com/http://corona-api.com/countries/${country.cca2}`));
 	});
 
-	const covid_full_data = await Promise.all(promises);
+	const covid_full_data = await Promise.allSettled(promises);
 
-	return destructureCovidData(countries, covid_full_data);
+	return covid_full_data;
 }
 
 
 // The function gets an array of corona data and region object and set the data to the matching country`s object.
-function destructureCovidData(countries, covid_full_data) {
+function destructureCovidData(region, covid_full_data) {
 	let index = 0;
-	for (const country in countries) {
-		countries[country].data = covid_full_data[index].data.data.latest_data;
-		countries[country].today = covid_full_data[index].data.data.today;
-		countries[country].updated_at = covid_full_data[index].data.data.updated_at;
+	for (const country in region) {
+		region[country].data = covid_full_data[index].data.data.latest_data;
+		region[country].today = covid_full_data[index].data.data.today;
+		region[country].updated_at = covid_full_data[index].data.data.updated_at;
 		++ index;
 	}
 
-	console.log(countries);
-	return countries;
+	// console.log(region);
+	return region;
 }
 
 
-
+// Chart functions
 // TODO: graph destroy, videos on charts (traversy, minecraft), https://www.youtube.com/watch?v=fqARSwfsV9w
+
+
+function displayData(region, data_category) {
+	const labels = Object.keys(region);
+	const category_data = getDataByCategory(region, data_category);
+	const data = {
+		labels: labels,
+		datasets: [{
+			label: `Number of ${data_category} per country`,
+			backgroundColor: 'rgb(255, 99, 132)',
+			borderColor: 'rgb(255, 99, 132)',
+			data: category_data,
+		}]
+	};
+	const config = {
+		type: 'line',
+		data: data,
+		options: {}
+	};
+
+	const chart = new Chart(
+		document.getElementById('dynamic-chart'),
+		config
+	);
+}
+
+
+function getDataByCategory(region, data_category) {
+	const data = [];
+	console.log('region: ', region);
+	console.log('data_category: ', data_category);
+
+	for (const country in region) {
+		console.log("country: ", country);
+		console.log("country.data: ", country.data);
+		console.log("country.data.latest_data: ", country.data);
+		data.push(country.data[data_category])
+	}
+	return data;
+}
