@@ -191,4 +191,5 @@ function displayCountryData({target}) {
 		return;
 	}
 
+	const country = global[core_elements.current_region][target].innerText;
 }
