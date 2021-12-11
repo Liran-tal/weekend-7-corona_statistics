@@ -171,12 +171,24 @@ function getDataByCategory(region, data_category) {
 
 function displayCountries(region) {
 	countries_wrapper.innerHTML = "";
+	countriesNameButtons(region)	
 }
 
 function countriesNameButtons(region) {
 	Object.keys(region).forEach((country) => {
 		const button = document.createElement('button');
-	
+		button.classList.add("country-name-btn");
+		button.innerText = country;
+		countries_wrapper.append(button);
 	});
+	document.querySelector('.country-buttons-wrapper')
+		.addEventListener('click', displayCountryData);
 }
 
+function displayCountryData({target}) {
+	
+	if (this === target) {
+		return;
+	}
+
+}
